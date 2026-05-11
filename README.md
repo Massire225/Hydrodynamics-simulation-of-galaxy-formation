@@ -13,6 +13,8 @@ Research project written in LaTeX exploring hydrodynamics simulation of aspects 
 - Gravitational collapse
 - modèle ΛCDM (Lambda Cold Dark Matter)
 -  Equation de Poisson
+-  Halo dark matter
+-  Supernovae and Black Holes
 
 ## Author
 Massire Toure
