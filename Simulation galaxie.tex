@@ -1,0 +1,616 @@
+\documentclass{article}
+
+% if you need to pass options to natbib, use, e.g.:
+%     \PassOptionsToPackage{numbers, compress}{natbib}
+% before loading aaj2026
+
+
+% ready for submission
+\usepackage[top=2cm, bottom=2cm, left=2cm, right=2cm, columnsep=20pt]{geometry}
+\usepackage[final]{aaj2026}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\bibliographystyle{plainnat}
+\usepackage[numbers]{natbib}
+\usepackage{tikz}
+\usepackage{pgf-pie}   % pour le diagramme en camembert
+\usepackage{xcolor}
+
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{xcolor}         % colors
+\usepackage{soul}
+\usepackage{array}
+\usepackage{multirow}
+
+
+%\title{Hydrodynamic simulation of galaxies formation}
+%\author{%
+%  Massire Toure\thanks{\emph{ }} \\
+%  Department de physique\\
+%  Université de Montréal\\
+%  \texttt{Massire.toure@umontreal.ca} \\
+%\And
+% Christian Lemay\thanks{\emph{ }} \\
+%  Department de physique\\
+%  Université de Montréal\\
+%  \texttt{Christian.lemay.2@umontreal.ca} \\
+%\And
+% Michael Barth\thanks{\emph{ }} \\
+%  Department de physique\\
+%  Université de Montréal\\
+%  \texttt{Michael.Barth@umontreal.ca} \\
+%}
+
+
+\begin{document}
+
+\begin{titlepage}
+
+\center
+
+\vspace*{2cm}
+
+\textsc{\LARGE Université de Montréal}\\[1cm] 
+\textsc{\Large PHY 3711 --  Cosmologie et astrophysique extra-galactique}\\[1.5cm] 
+
+\rule{\linewidth}{0.5mm} \\[0.5cm]
+{\LARGE \bfseries {Simulation hydrodynamique de structures galactiques.\\[0.2cm] 
+\rule{\linewidth}{0.5mm} \\[3cm]
+ 
+\large par: \\*[0.2cm] 
+Massire Toure   \\[0.2cm] 
+Christian Lemay \\[0.2cm]
+Michael Barth\\[6cm]
+
+
+\large Travail à remettre le: \\*
+{\large 4 mai 2026}\\[3cm]
+
+\vfill
+
+\end{titlepage}
+%\maketitle
+\section{Introduction}
+
+La formation et la morphologie des grandes structures de l'univers (halo, amas de galaxies,  galaxies) font partie des problèmes centraux de la cosmologie moderne. Dans le cadre du modèle $\Lambda$CDM (\textit{Lambda Cold Dark Matter}), la matière est principalement composée de matière noire (environ 80\% contre 20\%  pour la matière baryonique). Par contre, la matière noire  n'interagit avec son environnement qu'au travers la force gravitationnelle, ce qui limite son utilité pour établir un lien direct avec les observations. À l'inverse, les interactions de la matière baryonique ( gaz, poussières, plasmas, étoiles) sont multiples. Par l'intermédiaire de leur rayonnement d'onde électromagnétiques, les interactions baryoniques nous fournissent notre principale source d'information à partir de laquelle on peut observer et modéliser. Par conséquent, en dépit de leur faible proportion, l'étude et la modélisation des baryons, notamment par la simulation, deviennent utiles, voire  nécessaires. Or, si on approxime le comportement  des baryons comme celui d'un fluide, les équations hydrodynamiques forment une base solide pour leur analyse en simulation. Ces équations, intégrées avec des modèles semi-analytiques pour les processus physiques aux petites échelles et l'équation de Poisson pour la gravité, forment alors un ensemble complet pour la simulation de la matière baryonique.
+
+Ce rapport débute en présentant les principales équations hydrodynamiques qui dictent le comportement de baryons. Par la suite, les processus physiques  qui alimentent ces équations sont décrits : refroidissement des gaz, formation des étoiles et effet feedback produit par les étoiles supernovæ, trous noirs et AGN.  On décrit par la suite comment les simulations hydrodynamiques ont améliorées notre connaissance sur les grandes structures cosmiques, pour ensuite énumérer les principaux projets de simulation en cours. Finalement, les limites de ces simulations  ainsi que que les perspectives d'avenir sont dévoilés. 
+
+\\
+
+
+%Nous utiliserons les particules primordiale, c'est-a-dire des particules qui ont pu se former dans l'univers a quelques secondes juste après le Big Bang (nucléosynthèse primordial)
+%Lors de la nucléosynthèse primordiale, les baryons les plus légers se sont formés à des températures de l'ordre de
+%$10^{10}$\,K ($\sim 1$\,MeV) : principalement l'hydrogène %(\textsuperscript{1}H) et
+%l'hélium (\textsuperscript{4}He), avec des traces de deutérium et de lithium. Ce mélange
+%primordial constitue la condition initiale de nos simulations hydrodynamiques.
+
+%Deux grandes approches coexistent dans la littérature : les modèles semi-analytiques (\textit{SAMs}), qui appliquent des prescriptions analytiques en post-traitement de simulations N-corps et \textbf{la simulation hydrodynamique}, dans lesquelles les équations de base de la gravité et de l'hydrodynamique sont résolues numériquement.
+
+%Les particules du modèle standard représentent environ $5\%$ de la densité d'énergie de l'Univers et sont collectivement désignées 
+%sous le terme de baryons. Le modèle dominant
+%pour la formation des structures suppose que la matière noire est froide et sans collisions (\textit{cold dark matter}), et que l'énergie sombre est représentée par une
+%constante cosmologique $\Lambda$, ce qui conduit au modèle de concordance du $\lambda$CDM.
+
+
+%L'approche que nous adoptons dans ce rapport consiste à traiter explicitement la composante baryonique 
+%(gaz, étoiles, fluide parfait, etc...) dans des simulations couplant la dynamique des fluides à la gravité, offrant ainsi une méthodologie plus prédictive.
+
+%Initialement, la composante baryonique est entièrement constituée de gaz d'hydrogène et d'hélium (H,He). Une fraction de ce gaz se transforme ensuite en étoiles au cours de la formation des structures. Les gaz astrophysiques dans les simulations cosmologiques sont typiquement décrits comme des gaz parfait non visqueux comme vu en thermodynamique des gaz de bosons ou fermions suivant les équations d'Euler, que nous couplons ici à un formalisme Lagrangien pour en dériver les équations d'Euler-Lagrange et de Navier-Stokes.
+
+%\subsection*{Le Contenu énergétique de l’Univers}
+
+%\begin{figure}[h!]
+%\centering
+
+%\begin{tabular}{c}
+
+%\begin{tabular}{|c|c|}
+%\hline
+%\textbf{Composante} & \textbf{Contribution} \\
+%\hline
+%Énergie sombre & $\sim 68\%$ \\
+%\hline
+%Matière sombre & $\sim 27\%$ \\
+%\hline
+%Matière baryonique & $\sim 5\%$ \\
+%\hline
+%\end{tabular}
+
+%\\[0.5cm]
+
+%\begin{tabular}{c} \\
+%\textbf{Caractéristiques physiques} \\[0.3cm]
+
+%\begin{tabular}{|c|p{7cm}|}
+%\hline
+%Baryons & Matière ordinaire : gaz, étoiles, plasma. Interaction électromagnétique. \\
+%\hline
+%Matière sombre & Invisible, sans interaction électromagnétique. Détectée via la gravité. \\
+%\hline
+%Énergie sombre & Responsable de l’expansion accélérée de l’Univers. Nature inconnue. \\
+%\hline
+%\end{tabular}
+
+%\end{tabular}
+
+%\end{tabular}
+
+%\caption{Répartition et propriétés des principales composantes de l’Univers dans le modèle $\Lambda$CDM.}
+%\end{figure}
+%\label{fig:composition_univers}
+
+
+\section{ Simulation hydrodynamique}
+
+La simulation à grande échelle regroupe deux grands types de modèles de simulation. Le premier type de modèle est désigné sous le nom \textit{N-body} basé sur l'équation de Poisson pour un potentiel gravitationnel. Pour la matière noire, c'est le seul type d'intérêt puisque cette matière interagit exclusivement par la gravitation. Ces interactions sont donc sans collision. Le deuxième type de modèle s'applique à la matière baryonique dont les particules sont sujets à collision et font intervenir les paramètres tels la pression, la température et l'entropie. En simulation cosmologique, on désigne ce type de modèle \textit{hydrodynamique} puisque l'on approxime la matière baryonique comme un fluide.
+
+Ce modèle hydrodynamique est basé sur trois systèmes d'équations différentielles non-linéaires associées respectivement à la conservation de la masse, la conservation du momentum ( deuxième loi de Newton) et la conservation d'énergie (première loi de la thermodynamique) \cite{Vogelsberger2020}. Ces équations, appliquées aux fluides sont décrites à la Table \ref{eq :Equations Hydrodynamiques}.
+
+\subsection{Formulation Lagrangienne et Eulérienne}
+
+Les mêmes équations peuvent être formulées différemment en fonction du référentiel utilisé dans leur résolution.  Dans une formulation Lagrangienne, les points d'intérêt sont des éléments de masses dans un référentiel qui se déplace spatialement dans le temps en suivant le flux du fluide. Dans une formulation Eulérienne, les fluides sont simulés dans un référentiel qui est fixe dans l'espace.  La formulation Lagrangienne est  flexible, répond bien aux changements de densité (e.g effondrement de masse interstellaire), élimine les erreurs numériques liés à l'advection (puisque le référentiel se déplace avec le fluide) et s'intègre bien avec la méthode N-body. La formulation Eulérienne a par contre l'avantage d'être stable dans des régions de hautes discontinuités ( e.g. les ondes de chocs) ou des régions de turbulence.
+
+
+\subsection{Technique de simulation}
+
+La simulation par maillage (\textit{mesh simulation}) est à la base de toutes les techniques. Bien qu'il y ait une multitude de famille, on peut les catégoriser en deux familles : simulation basée sur le volume ( mesh-based) ou basée sur des particules \citep{10.1093/mnras/stac3447}.
+
+En ce qui concerne la simulation basée sur le volume, le domaine de simulation est divisé en cellules spatiales. Ces cellules peuvent avoir, selon l'algorithme utilisé, diverses formes (e.g. cubiques, tétraédriques). Ces cellules peuvent être  fixes ou variables. La partition des cellules n'est pas limitée aux partitions régulières; elle peut aussi être réalisée en employant de techniques de tesselation (e.g. Voronoi, Delaunay). Les algorithmes incluent aussi des techniques de  reconstruction et de lissage afin de reproduire la distribution spatiale  en considérant les cellules voisines, minimisant ainsi les discontinuités. Sous cette famille, une formulation Eulérienne est souvent utilisée avec un patron de cellules spatiales variables. Par exemple, une cellule en question peut avoir une masse qui dépasse un certain seuil; celle-ci est alors sous-devisée en $2^3$. Cette méthode devient alors pseudo-Lagrangienne puisque les tailles de cellules dépendent de la masse. D'autres paramètres, comme la vitesse, sont aussi utilisés comme critère de division de cellules, notamment dans des régions d'onde de choc et de turbulence. Une autre approche appelée \textit{moving mesh} (MM) déforme les cellules en fonction du flux de densité aux frontières de celles-ci. \\
+
+Dans une simulation basée sur les particules, le domaine de simulation est découpée en éléments de masse (dénommés \textit{particules}). Ce type de simulation utilise par le fait même une formulation Lagrangienne. Une des méthodes les plus populaires est la méthode  Smoothed Particle Hydrodynamics (SPH) (voir référence \cite{Hopkins_2012} pour une dérivation complète avec équations). 
+
+
+
+
+\begin{table}
+\begin{center}
+
+\begin{tabular}{|p{3cm}||p{5cm}|p{5cm}|}
+
+\hline
+                            & Formulation Lagrangienne & Formulation Eulerienne \\
+ \hline
+ Équation de conservation de masse & \[ \frac{ d\rho}{d t}  + \rho \overrightarrow{\nabla}\cdot \overrightarrow{v} = 0 
+\] & \[
+    \frac{\partial \rho}{\partial t}  +  \overrightarrow{\nabla}\cdot \rho\overrightarrow{v} = 0
+\]  \\ 
+ \hline
+ Conservation du momentum & \[
+    \rho \frac{d\overrightarrow{v}}{dt} = - \overrightarrow{\nabla}P - \rho\overrightarrow{\nabla} \Phi
+    
+\] & \[
+    \rho \frac{\partial\overrightarrow{v}}{\partial t} - \rho{\overrightarrow{v}(\overrightarrow{\nabla}\cdot\overrightarrow{v)} }= - \overrightarrow{\nabla}P - \rho\overrightarrow{\nabla} \Phi
+\]  \\ 
+ \hline
+ Première loi de Thermodynamique & \[
+     \frac{du}{dt} = - \frac{P}{\rho}\overrightarrow{\nabla}\cdot\overrightarrow{v} - n^2\frac{\Lambda(u,\rho)}{\rho} 
+ \] & \[
+     \frac{\partial \rho u}{dt} = - \overrightarrow{\nabla}\cdot[(\rho u+P)\overrightarrow{v]} - n^2\Lambda(u,\rho)
+\]
+ 
+   \\ 
+ \hline
+\end{tabular}
+\hspace{0.3\linewidth}
+\caption{Système d'équations utilisé en simulation hydrodynamique selon une formulation Lagrangienne ou  Eulérienne. Les variables impliquées sont $\rho$ la densité de masse, $\overrightarrow{v}$ la vitesse, $P$ la pression, $\Phi$ le potentiel gravitationnel et $u$ l'énergie interne. Le facteur $\Lambda(u,\rho)$ est une fonction du refroidissement avec n étant la densité numérique du gaz. }  \label{eq :Equations Hydrodynamiques}
+\end{center}
+\end{table} 
+
+
+\subsection{ Échelles de simulation : Simulation zoom-in vs uniform, isolée}
+
+Compte tenu des capacités limitées des ressources informatiques et des objectifs de recherche, la simulation de grandes structures cosmologiques s'opère à différentes échelles. On peut en distinguer trois:
+
+\paragraph{Simulation uniforme}: Simulation de grandes échelles ( de l'ordre du Gpc ou plus) qui opère à une basse résolution avec des cellules de tailles fixes. Les processus physiques qui agissent sur une échelle trop petite pour être résolus sont alors modélisés par des modèles semi-analytiques "sous-grille".  
+
+\paragraph{Simulation \textit{zoom-in}}: Ce type de simulation commence par les résultats d'une simulation à basse résolution pour les grandes structures de l’univers. Par la suite, les structures plus petites (typiquement galaxies) sont re-simulées à une haute résolution (entourées de la simulation originale à basse résolution). Ces petites structures sont souvent re-simulées en incorporant des modèles semi-analytiques mieux calibrées/spécialisées aux objets d'intérêt que celles d'une simulation uniforme \citep[par ex.,][]{ARTEMIS_sim}.
+
+\paragraph{Simulation isolée}: Simulation de haute résolution qui se concentre sur un objet (par ex., une seule galaxie) sans aucune simulation à basse résolution pour les grandes structures environnants l'objet. Les conditions initiales et les modèles semi-analytiques de ce type de simulation sont très spécialisées aux objets d'intérêt \citep[par ex.,][]{NEXUS_isolated}.
+
+
+\section{Processus physiques à simuler}
+
+La matière noire est totalement découplée du reste de l'Univers et n'interagit qu'à travers la gravitation, ce qui simplifie considérablement sa modélisation. 
+Le gaz baryonique, en revanche, est soumis à une physique bien élaborée : il peut être \textbf{chauffé} et \textbf{refroidi} par de nombreux processus radiatifs et thermiques, rendant sa description numérique plus complexe. Les simulations hydrodynamiques ne peuvent pas capturer tous les processus radiatifs et thermiques à l’intérieur des galaxies, en raison de la physique sous-jacente complexe et souvent mal comprise. Ainsi, ces simulations visent à reproduire par modèles semi-analytiques les comportements à grande échelle issus de quatre processus : le refroidissement radiatif du gaz, la formation stellaire, l’accrétion de gaz autour les trous noirs supermassifs, et la rétroaction des étoiles et supernovæ. 
+
+\subsection{ Refroidissement du gaz}
+
+La majorité de la matière baryonique \cite{Vogelsberger_Galaxy_2014} est un fluide composée des gaz primordiaux d'hydrogène et d'hélium. 
+%ainsi que les autres composantes (matière noire) qui sont traités comme des \textbf{fluides continus} 
+%dont l'évolution est régie par les équations de la mécanique des fluides couplées à la gravité \cite{Tormen1996}.
+Un fluide est entièrement décrit par son champ de densité 
+$\rho$ = $\rho(\mathbf{x}, \mathbf{t})$, 
+son champ de vitesse $\mathbf{v}(\mathbf{x}, t)$, et son champ de pression 
+$P(\mathbf{x}, t)$, reliés par une \textbf{équation d'état}. Pour un gaz 
+idéal non relativiste :
+
+\begin{equation}
+    P = (\gamma - 1)\, \rho\, u  
+    \label{eq:etat}
+\end{equation}
+
+\noindent où $\gamma$ est l'indice adiabatique ($\gamma = 5/3$ pour un gaz 
+monoatomique) et $u$ est l'énergie interne spécifique \cite{Katz1996}. Le refroidissement radiatif est l'un des mécanismes fondamentaux de la 
+formation des galaxies. Il permet au gaz chaud de perdre son énergie 
+thermique par émission de rayonnement, de se condenser et d'alimenter 
+la formation stellaire.
+
+\subsubsection{Fonction de refroidissement}
+Le taux de refroidissement volumique est caractérisé par la 
+\textbf{fonction de refroidissement} $\Lambda(T)$, telle que la perte 
+d'énergie par unité de volume et de temps s'écrit :
+
+\begin{equation}
+    \mathcal{L}_{\rm froid} = n_{\rm H}^2\, \Lambda(T, Z)
+    \label{eq:cooling_rate}
+\end{equation}
+\bigskip
+\noindent où $n_{\rm H}$ est la densité numérique d'hydrogène, $T$, la température du gaz, et $Z$ sa métallicité. 
+À haute température ($T > 10^7$ K), le refroidissement est dominé par le \textbf{Bremsstrahlung} (rayonnement de freinage) :
+
+\begin{equation}
+    \Lambda_{\rm eff}(T) \propto T^{1/2}
+    \label{eq:bremsstrahlung}
+\end{equation}
+\noindent À des températures intermédiaires (\( T \in [10^4, 10^7] \))k, 
+le refroidissement est dominé par les \textbf{raies d'excitation collisionnelle} 
+de l'hydrogène et de l'hélium \cite{Katz1996}.
+
+
+\subsubsection{Temps de refroidissement}
+Une quantité clé est le \textbf{temps caractéristique de refroidissement}, 
+qui compare l'énergie thermique disponible au taux de perte d'énergie :
+
+\begin{equation}
+    t_{\rm froid} = \frac{u}{\dot{u}_{\rm froid}} 
+    = \frac{\rho\, u}{n_{\rm H}^2\, \Lambda(T, Z)}
+    \label{eq:tfroid}
+\end{equation}
+
+\noindent Lorsque $t_{\rm froid} \ll t_{\rm Hubble}$, le gaz se refroidit efficacement et peut s'effondrer gravitationnellement pour former des étoiles. 
+C'est la condition nécessaire à la formation des galaxies.
+
+\subsubsection{Refroidissement par excitation de l'hydrogène (Lyman-$\alpha$)}
+
+Pour un gaz d'hydrogène pur à $T \sim 10^4$ K, le taux de refroidissement 
+par excitation collisionnelle de la transition Lyman-$\alpha$ est 
+approximé par :
+
+\begin{equation}
+    \Lambda_{\rm Ly\alpha}(T) 
+    \approx 7.5 \times 10^{-19} 
+    \left(1 + \sqrt{\frac{T}{10^5}}\right)^{-1}
+    \exp\!\left(\frac{-118348}{T}\right) 
+    \quad [\text{erg cm}^3\,\text{s}^{-1}]
+    \label{eq:lyalpha}
+\end{equation}
+
+\noindent Ce mécanisme est l'un des plus importants pour le refroidissement du gaz primordial (H, He) dans nos simulations car rappelons que nous sommes encore dans la nucléosynthèse primordiale et donc seule les atomes d’hydrogène et d’hélium étaient en abondance.
+
+\subsubsection{Milieu Interstellaire (\textbf{MIS})}
+Les gaz primordiaux ne sont pas les seules formes de matière fluide dans une galaxie. Le milieu interstellaire désigne l'ensemble de la matière (gaz, poussières, rayonnement et champs magnétiques) qui occupe l'espace entre les étoiles au sein d'une galaxie \cite{Tormen1996}. C'est un milieu multiphase, turbulent et chimiquement actif, dont la modélisation est indispensable pour
+reproduire correctement la formation stellaire et l'évolution des galaxies. Quelques phases de ce milieu sont listées dans Tableau 2. 
+\begin{table}[h!]
+\centering
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{lccl}
+\hline
+\textbf{Phase} & \textbf{Température (K)} 
+               & \textbf{Densité (cm$^{-3}$)} & \textbf{État} \\
+\hline
+Gaz moléculaire     & $T \sim 10$--$30$       
+                    & $n \sim 10^2$--$10^6$   & Nuages denses, froid \\
+Gaz neutre froid    & $T \sim 50$--$100$      
+                    & $n \sim 20$--$50$        & Phase froide  \\
+Gaz neutre tiède    & $T \sim 6000$--$10^4$   
+                    & $n \sim 0.1$--$1$        & Phase tiède \\
+Gaz ionisé tiède    & $T \sim 8000$           
+                    & $n \sim 0.1$             & Régions H\,\textsc{ii} \\
+Gaz ionisé chaud    & $T \sim 10^5$--$10^6$   
+                    & $n \sim 10^{-3}$--$10^{-2}$ & Bulles de SN \\
+\hline
+\end{tabular}
+\caption{Principales phases du milieu interstellaire 
+         \cite{McKee1977, Ferriere2001}.}
+\label{tab:phases_MIS}
+\end{table}
+
+
+\textbf{Équilibre thermique du MIS}
+
+
+L'état thermique du MIS à chaque point est déterminé par l'équilibre
+entre les processus de \textbf{chauffage} $\mathcal{H}$ et de
+\textbf{refroidissement} $\mathcal{L}$ :
+
+\begin{equation}
+    \frac{de}{dt} = \mathcal{H}(\rho, T) - \mathcal{L}(\rho, T)
+    \label{eq:equilibre_thermique}
+\end{equation}
+
+\noindent où $e = \rho u$ est la densité volumique d'énergie interne.
+À l'équilibre thermique, on impose :
+
+\begin{equation}
+    \mathcal{H}(\rho, T^*) = \mathcal{L}(\rho, T^*)
+    \label{eq:equilibre_strict}
+\end{equation}
+
+\noindent ce qui définit une \textbf{température d'équilibre} $T^*$
+pour une densité donnée $\rho$. Le prochains sections (3.2-3.4) décrivent les processus hors équilibre qui contribuent au chauffage et au composition chimique du Milieu Interstellaire: la formation des étoiles, l’accrétion du gaz autour les AGN, et la rétroaction des proto-étoiles et supernova.    
+
+
+\subsection{Formation des étoiles}
+La formation stellaire est le processus par lequel le gaz dense et froid du milieu interstellaire s'effondre gravitationnellement pour former des étoiles; les étoiles, à leur tour, sont la source principale d’énergie radiative dans les galaxies (sauf les galaxies avec les AGN les plus puissants). De plus, leur mort change la composition chimique du milieu interstellaire. C'est l'un des processus les plus importants et les plus difficiles à modéliser dans notre simulations hydrodynamiques de formation des galaxies, car il opère à des échelles bien inférieures à la résolution typique des simulations cosmologiques 
+\cite{Katz1996}.
+
+\subsubsection{Instabilité de Jeans et fragmentation}
+
+Un nuage de gaz du MIS s'effondre gravitationnellement si sa masse
+dépasse la \textbf{masse de Jeans} $M_J$, définie par la condition
+que l'énergie gravitationnelle domine l'énergie thermique :
+
+\begin{equation}
+    M_J = \frac{4\pi}{3}\rho \left(\frac{\lambda_J}{2}\right)^3
+    \label{eq:masse_jeans}
+\end{equation}
+
+\noindent où $\lambda_J$ est la \textbf{longueur de Jeans} :
+
+\begin{equation}
+    \lambda_J = c_s \sqrt{\frac{\pi}{G \rho}}
+    \label{eq:longueur_jeans}
+\end{equation}
+
+\noindent avec $c_s$, la vitesse du son dans le gaz.
+
+\subsubsection{Critères de formation stellaire}
+Une particule de gaz est éligible à la formation stellaire si elle 
+satisfait simultanément les conditions suivantes \cite{Katz1996} :
+
+\begin{enumerate}
+
+    \item \textbf{Critère de densité} : la densité locale du gaz 
+    dépasse un seuil critique $\rho_{\rm th}$ :
+    %
+    \begin{equation}
+        \rho > \rho_{\rm th}
+        \label{eq:critere_densite}
+    \end{equation}
+
+    \item \textbf{Critère de convergence} : le gaz est en contraction, 
+    c'est-à-dire que le champ de vitesse est convergent :
+    %
+    \begin{equation}
+        \nabla \cdot \mathbf{v} < 0
+        \label{eq:critere_convergence}
+    \end{equation}
+
+    \item \textbf{Critère de Jeans} : la masse locale dépasse la 
+    masse de Jeans (instabilité gravitationnelle) :
+    %
+    \begin{equation}
+        M_{\rm gaz} > M_J 
+        = \frac{\pi^{5/2}}{6}\,\frac{c_s^3}{G^{3/2}\,\rho^{1/2}}
+        \label{eq:critere_jeans}
+    \end{equation}
+
+    \item \textbf{Critère de refroidissement} : le temps de 
+    refroidissement est inférieur au temps dynamique :
+    %
+    \begin{equation}
+        t_{\rm froid} < t_{\rm dyn} = \frac{1}{\sqrt{G\rho}}
+        \label{eq:critere_froid}
+    \end{equation}
+
+\end{enumerate}
+
+\subsubsection*{Loi de Kennicutt-Schmidt}
+
+Car les conditions de formation stellaire ne sont pas résolues normalement, des modèles "sous-grille" sont typiquement nécessaires. La loi de Kennicutt-Schmidt \citep{Schmidt}, observée dans les galaxies, donne une approximation du taux local de la formation des étoiles:
+
+\begin{equation}
+    \Sigma_{\text{SFR}} \propto \left(\Sigma_{\text{gaz}} \right)^n
+\end{equation}
+
+où $\Sigma_{\text{SFR}}$ est la densité de surface locale du taux de formation des étoiles et $\Sigma_{\text{gaz}}$ est la densité de surface locale du gaz. Cette approximation est souvent utilisée pour la modélisation de la formation des étoiles dans les simulations hydrodynamiques quand la taille des grilles ne permette pas de résoudre les critères de formation stellaire directement \citep[par ex.,][]{SIMBA_SMBH}. 
+
+\subsection{Trous Noirs Supermassifs et AGN}
+
+L’accrétion de gaz sur les trous noirs supermassifs (SMBHs) au centre des galaxies (noyaux galactiques actifs, ou AGN) génère de puissants effets de rétroaction, qui sont supposés jouer un rôle clé dans la limitation de la formation stellaire et de la croissance de la masse des SMBHs, influençant ainsi la morphologie de la galaxie entière (par ex., \citep{FU_SMBH_STARS} et les sources citées). Cependant, il existe deux défis principaux pour simuler les puissants effets hydrodynamiques de l’accrétion de gaz par les trous noirs : le processus est mal compris d’un point de vue théorique, et il se produit sur une vaste gamme d’échelles physiques, allant de moins d’un parsec du trou noir jusqu’à des kiloparsecs à travers la galaxie (\citep{ILLUSTRIS_SMBH}). Ainsi, plusieurs approches différentes de « coarse-graining » ont été introduites afin de modéliser les effets à grande échelle de la rétroaction des trous noirs supermassifs.
+
+Les modèles les plus détaillés simulent directement les jets relativistes, le chauffage et la pression induits par le rayonnement, l’émission de rayons cosmiques et les vents thermiques (\citep{SMBH_JETS}). Cependant, augmenter ces simulations à l’échelle cosmologique est irréalisable. Ainsi, des modèles simplifiés « sous-grille » sont utilisés pour tenter de capturer le comportement empirique de la rétroaction des trous noirs aux échelles galactiques et extra-galactiques. Les modèles sous-grille visent à capturer une partie ou la totalité de la physique suivante : les effets thermiques, cinétiques, et radiatifs.
+
+Pour éviter de simuler tous ces effets simultanément, les modèles sous-grille appliquent généralement seulement les effets dominants dans un état d’accrétion donné. Par exemple, \citet{ILLUSTRIS_SMBH} utilisent un mode cinétique pour les faibles taux d’accrétion et un mode thermique pour les taux d’accrétion élevés, tandis que \citet{SIMBA_SMBH} utilisent trois différentes combinaisons d’effets à différents niveaux d’accrétion. Une expression souvent utilisée pour le taux d’accrétion est l’accrétion de Bondi-Hoyle-Lyttleton :
+\begin{equation}
+\dot M_{\text{Bondi}} = \frac{4 \pi G^2 M_{\text{BH}}^2 \rho}{c_s^3}
+\end{equation}
+
+où $G$ est la constante gravitationnelle, $M_{BH}$ est la masse du trou noir, $\rho$ est la densité du gaz près du trou noir, et $c_s$ est la vitesse du son dans ce gaz. Des modèles d’accrétion plus complexes ajoutent des composantes cinétiques comme le moment cinétique.
+
+Pour mettre le taux d’accrétion de Bondi-Hoyle-Lyttleton en contexte, on le compare généralement au taux d’accrétion d’Eddington,
+
+\begin{equation}
+\dot M_{\text{Edd}} = \frac{4 \pi G M_{\text{BH}} m_p}{\epsilon_r \sigma_T c}
+\end{equation}
+
+où $m_p$ est la masse du proton, $\epsilon_r$ est l’efficacité radiative de l’accrétion, et $\sigma_T$ est la section efficace de Thomson. Le taux d’accrétion d’Eddington représente le taux maximal théorique de croissance de la masse pour un corps à symétrie sphérique : au taux d’Eddington, la gravité dirigée vers l’intérieur du corps est équilibrée par la pression vers l’extérieur du rayonnement produit par sa propre accrétion. Le rapport entre le taux d’accrétion de Bondi-Hoyle-Lyttleton et le taux d’accrétion d’Eddington, $\lambda = \dot M_{\text{Bondi}} /\dot M_{\text{Edd}}$, gouverne donc la transition entre des modes d’accrétion relativement « élevés » et « faibles » pour un trou noir donné.
+
+\subsection{Rétroaction des proto-étoiles et supernova}
+
+Le début de la vie d'une étoile (la proto-étoile) ainsi que la fin de sa vie (souvent en forme de supernova) sont caractérisés par des vents de gaz et une augmentation rapide de radiation. En libérant une quantité importante d'énergie, les proto-étoiles et les supernova contribuent au réchauffement des gaz froids d'une façon similaire aux AGN. Par conséquent, elles ont une forte influence sur le taux de formation des étoiles \citep[par ex.,][]{Yepes_1997, FIRE_feedback}. Comme les AGN, les effets des proto-étoiles et supernovæ agissent sur une gamme des échelles trop variées pour être résolues complètement par les simulations hydrodynamiques; par conséquent, des modèles sous-grilles sont utilisées. Ces modèles sont typiquement une combinaison de la pression radiative, l’énergie thermique, l’énergie mécanique, l'ionisation par photons, et la création des éléments lourds, qui servent ensemble à modifier l’état du milieu interstellaire \citep[par ex.,][]{FIRE_sim}. 
+
+
+
+\section{Applications aux processus physiques }
+
+Parmi les résultats obtenus en simulation qui reproduise bien les observations, on retrouve (\cite{Vogelsberger2020})
+\begin{itemize}
+
+\item amas de galaxies et HOD (Halo Occupation Distribution)
+\item morphologie des galaxies (incluant récemment les galaxies barrées \citep{Auriga_bars})
+\item contenu étoile-gaz
+\end{itemize}
+
+Parmi les  autres succès obtenus en simulation hydrodynamique, on retrouve  la simulation du milieu intergalactique (e.g Lyman-$\alpha$ forest), le gaz circum-galactique \citep{Vogelsberger2020}, et la distribution spectrale d’énergie des galaxies (avec l'aide des codes de transfert radiatif \citep[par ex.,][]{SKIRT}). \\
+
+Les prochaines sections précisent quelques résultats significatifs qui servent à démontrer l'importance des simulations hydrodynamiques, en comparaison avec les simulations N-body de matière noire, pour obtenir des résultats réalistes. 
+
+\subsection{Spectre de puissance de la matière}
+
+L’analyse du spectre de puissance est une approche clé afin d’en connaître davantage sur les conditions initiales de l'univers et ses fluctuations qui ont conduit ultimement à la formation d'halos et des galaxies. Le spectre de puissance $ P(\overrightarrow{k},t)$ est calculé à partir de la transformée de Fourier d'une fonction $\xi(|\overrightarrow{r}|)$ :
+
+\[  P(\overrightarrow{k},t) = \int e^{i\overrightarrow{k}\cdot\overrightarrow{r} } \xi(\overrightarrow{r})   d^3r \]
+
+$\xi(|\overrightarrow{r}|)$ est une fonction de la distance spatiale $\overrightarrow{r}$ entre deux points  ( $\overrightarrow{x}$ et $\overrightarrow{y}$ ) et correspond à une valeur moyenne sur la différence de perturbation de densité $\delta$ entre ces points : 
+
+\[ \xi(|\overrightarrow{r}|)  = \xi(|\overrightarrow{x}-\overrightarrow{y}|)  =  <\delta(\overrightarrow{x},t) \delta(\overrightarrow{y},t)>   \]
+
+
+      
+Les premières analyses du spectre de puissance ont été faites en  ne considérant que la matière noire ( simulation N-body)  et l'incorporation de modèles semi-analytiques. Mais présentement, la publication de données cosmiques de plus en plus précises (à une précision relative inférieure à 1\%), nécessite maintenant des résultats d’analyse plus poussés dans des régions où k (nombre d’onde) est inférieur à 10 h$Mpc^{-1}$ (\cite{Chisari_2018}.  À ce niveau de précision , il devient impératif de considérer les impacts de la matière baryonique et les équations hydrodynamiques deviennent alors essentielles.
+
+Des simulations basées sur les techniques de TreePM (PM : particle mesh) et de SPH ont démontré que pour des valeurs de k > 0.3 h$Mpc^{-1}$, la matière baryonique et, en particulier, les rétroactions AGN ne peuvent plus être ignorées \citep{van_Daalen_2011}.  En effet, l'inclusion de la matière baryonique avec les AGN a donné une réduction de 10\% du spectre du puissance pour $k \approx 1 hMpc^{-1}$. Des simulations plus récentes avec Horizon-AGN \cite{Chisari_2018} ont également montré une diminution du spectre de puissance d’environ 15\% pour $k \approx 10 h Mpc^{-1} $ à z=0. Parmi les effets des AGN qui sont particulièrement importants on note la redistribution du gaz loin des galaxies par les vents des AGN. Parce que les AGN sont ainsi capables d'influencer la distribution du gaz aux grandes échelles hors les galaxies, le spectre de puissance est alors amoindri dans des échelles supérieures aux échelles des galaxies individuels.
+
+\subsection{ Amas de Galaxies}
+
+Les premières simulations hydrodynamiques pouvaient difficilement être étendues au niveau des amas de galaxie compte tenu des grandes  échelles de volume exigées pour les contenir tout en considérant les hautes résolutions requises pour simuler les galaxies. Toutefois, les dernières années ont permis d'étendre cette échelle sans sacrifier la résolution notamment par le projet de simulation Illustris TNG (\cite{Springel_2017}. Simulant des régions cubiques d'environ $300 Mpc^3$, avec 30 $\times 10^9$ d'éléments, des résultats intéressants ont été obtenus. 
+Entre autres, on sait maintenant qu'une augmentation des amas de matières noires sur de petites échelles entraîne une réduction de 20\% du spectre de puissance pour des échelles allant jusqu'à $10hMpc^{-1}$. Il a été également démontré que la fonction de corrélation de 2-points dans la masse stellaire suit initialement une loi de puissance mais reste indépendant du temps pour de grand red-shift jusqu'à aujourd’hui (Figure \ref{Fig : ConstrasteDensite})
+
+
+\begin{figure} [h!]
+    \centering
+    \includegraphics[width=0.80\linewidth]{ContrasteDensite_Springler.png}
+    \caption{Évolution du contraste de densité en fonction de z pour la matière noire et la masse stellaire. Pour la matière noire la progression vers du contraste est graduelle dans le temps. Pour la masse stellaire le contraste déjà important à z=3 reste toutefois invariant dans la temps jusqu'à aujourd'hui (Image tiré de \cite{Springel_2017}} 
+\label{Fig : ConstrasteDensite}   
+\end{figure}
+
+\subsection{Distribution d'occupation des halos (HOD) et formation des galaxies}
+
+Le modèle HOD ( Halo Occupation Distribution)  constitue un cadre flexible d’analyse qui permet de décrire statistiquement la distribution spatiale de la matière noire et des observables sur des grandes échelles non-linéaires (\cite{Asgari_2023}). Il représente une relation statistique entre la distribution des galaxies et la matière noire. Une connaissance de la corrélation de distribution en densité entre la matière noire et la matière baryonique est primordial afin d’en connaître d'avantage sur la création des amas galactiques \citep{Zheng_2005}. Il devient alors possible de lier la distribution spatiale de structures observés par les télescopes avec la distribution associée de matière noire. 
+
+La modélisation du HOD était typiquement basée sur des modèles semi-analytiques et des simulations de type N-body. Les modèles les plus simplifiées supposaient que la création d’une galaxie centrale au sein d’un halo (et de ces possibles galaxies satellitaires) ne dépendaient que de la masse de l’halo. Par contre, pour la matière baryonique et  les  gaz  qui forment les galaxies (et donc des observables) ceux-ci sont sujets à la pressure, aux ondes de chocs et autres paramètres caractéristiques des fluides.  Par conséquent, l’utilisation d’équations hydrodynamiques devenaient un incontournable. \\ \citet{Berlind_2003} ont utilisé la méthode de SPH qui s’est montrée en bon accord avec les modèles semi-analytiques de HOD. \citet{Zheng_2005} ont utilisé une simulation qui incorporait aussi un modèle de type SPH et ont établi une relation du taux d’occupation des galaxies en fonction de la masse d’un halo. On décrit cette relation ci-dessous. 
+
+Pour le taux d'occupation de la galaxie centrale  $\langle N_{cen}\rangle_M$, la relation est 
+\begin{equation}
+    \langle N_{cen}\rangle_M = \frac{1}{2} [ 1+ erf(\frac{log M - log M_{min}}{\sigma_{log M}})]
+\end{equation}
+
+où
+\begin{equation}
+erf(x) = \frac{2}{\sqrt{\pi}} \int_{0}^{x} e^{-t^2} \,dt
+\end{equation}
+
+Pour le taux d'occupation des galaxies satellitaires $\langle N_{sat} \rangle_M $, la relation est 
+
+\begin{equation}
+    \langle N_{sat} \rangle_M = [(M - M_o)/M'_1]^\alpha
+\end{equation}
+
+Où M est la masse viriele de l'halo, $M_{min}$ sa masse minimale pour avoir une galaxie centrale.  $\sigma_{log M}$ , $\alpha$, $M_o$ , $M'_1$ et $M_{min}$ sont des paramètres empiriques d'ajustement entre la simulation SPH et les modèles semi-analytiques.
+
+
+Plus récemment, en appliquant ces équations dans la simulation IllustrisTGN , il a été démontré qu'en fait le modèle HOD avec matière noire seulement sous-estime une fonction de corrélation masse-galaxie   illustrant ainsi la pertinence d’incorporer des éléments hydrodynamiques afin de mieux corroborer la distribution des amas galactiques dans l’univers avec les observations (\cite{Hadzhiyska_2020}.
+
+
+\section{Projets en cours de simulation}
+
+Il existe plus d'une dizaine de projets de simulation en astrophysique. Certains se limitent à des simulations  Tree-PM N-body; d'autres incluent les équations hydrodynamiques \cite{Vogelsberger2020}. Parmi les projets majeurs du second type, nous en présentons quelques uns parmi les plus récents :
+
+\paragraph{\href{https://www.tng-project.org/}{IllustrisTNG}} \citep{Illustris}: Ce projet est dirigé par l`institut  Heidelberg en physique théorique avec plusieurs colloborateurs du MIT, Harvard et l’institut Planck. Son objectif premier est de mieux comprendre la formation des galaxies dans le contexte cosmologique. Ce projet consiste en un ensemble de 18 simulations allant du début du big bang jusqu’à aujourd`hui dans trois volumes : 51.7, 110.7 et 302.6 $Mpc^3$ avec une résolution uniforme entre 10 et 30 milliards d’éléments. Il utilise le code AREPO \citep{AREPO}; ce code se sert de l'approche \textit{moving mesh}, un formalisme pseudo-Lagrangien. 
+
+\paragraph{\href{https://eagle.strw.leidenuniv.nl/wordpress/}{EAGLE}} \cite{Schaye_2014} : Le projet EAGLE est dirigé par le \href{https://virgo.dur.ac.uk/}{consortium Virgo}  qui consiste à une multitude de super-ordinateurs situés au Royaume-Uni et en Allemagne. Son objectif vise la simulation hydrodynamique à grande échelle avec une résolution uniforme. Leur modèle est  basé sur des versions modifiées de modèle N-body, Tree-PM et SPH (un formalisme Lagrangien) avec une résolution d’environ 7 milliard d’éléments. 
+
+\paragraph{\href{https://www.horizon-simulation.org/}{Horizon-AGN}} \citep{Horizon}: Simulation hydrodynamique de co-volume avec une taille fixe de 100 Mpc/h et de plus d’un milliard de particules de matière noire. La simulation utilise la technique AMR (\textit{Adaptive Mesh Refinement}, un formalisme Eulerien) avec une résolution minimale de 1 Kpc. La simulation couvre la  dynamique des gaz sous refroidissement/réchauffement et intègre des modèles de haute résolution pour la formation d’étoile avec les effets de rétroactions dont les vents solaires et les supernovæ. Ce projet est piloté par l’institut d’astrophysique de Paris avec les ordinateurs installés dans la sud de la France.
+
+\paragraph{\href{https://wwwmpa.mpa-garching.mpg.de/auriga/}{AURIGA}} \citep{Auriga_zoom}: Ce projet consiste d'une trentaine de galaxies simulées par méthode zoom-in avec des résolutions de l'ordre de magnitude d'une centaine de parsecs. Ces simulations sont crées avec le même code (AREPO) que IllustrisTNG. La direction inclut l‘institut Heidelberg en physique théorique, l’institut Planck, l’université de Durham, et MIT.
+
+\paragraph{\href{https://sites.google.com/site/santacruzcomparisonproject/}{AGORA}} \citep{AGORA} : Ce projet est composé de plusieurs simulations zoom-in \citep{AGORA_zoom} et isolées \citep{AGORA_isolee} qui visent améliorer la simulation des galaxies et les processus de rétroaction qui affectent leur morphologie. La résolution atteinte est $\approx 100$ pc. Ce projet utilise plusieurs codes (Eulerien, Lagrangien, et pseudo-Lagrangien) afin de mieux comprendre les biais introduits par les choix de modélisation. Ce projet est dirigé par des chercheurs de plus de 60 instituts de recherche et utilise principalement des superordinateurs en Californie, E-U. 
+
+\paragraph{\href{https://www.camel-simulations.org/}{CAMELS}} \citep{CAMELS}: Ce projet intègre les résultats de plus de 4,000 simulations avec une variété de codes et échelles; leur but est de créer un ensemble de données suffisant pour entraîner des réseaux neuronaux pour fin d'émulation par apprentissage automatique. Ce projet est dirigé par des chercheurs de l'institut Flatiron avec la collaboration de plusieurs équipes internationales.  
+
+
+\section{Conclusion : Perspectives pour les prochaines années}
+Les simulations hydrodynamiques de formation des galaxies nous permettent de comprendre avec une grande précision la naissance des galaxies que contient l'univers. Malgré des progrès 
+considérables, des défis majeurs subsistent et de nouvelles avenues de recherche s'ouvrent pour la prochaine décennie.
+
+\subsection{Limitations et défis}
+Trois défis fondamentaux limitent actuellement ces simulations \cite{Vogelsberger2020} :\\
+\\\textbf{(i) Calibration.} Il est impossible de réaliser une simulation \textit{ab initio} : les processus sous-grille 
+(formation stellaire, feedback) introduisent des paramètres libres 
+qui doivent être calibrés sur des observations actuelles. Cela limite 
+le pouvoir prédictif des modèles et soulève la question de leur 
+universalité au-delà des observables utilisées pour la calibration.
+
+\textbf{(ii) Convergence numérique.} Les résultats physiques doivent 
+être indépendants des paramètres numériques (résolution en masse, 
+pas du temps, longueur de softening). Atteindre cette convergence 
+pour les processus baryoniques reste un défi majeur, car le coût 
+computationnel 
+croît comme $t_{\rm CPU} \propto N \log N$, rendant 
+les études systématiques de convergence extrêmement coûteuses.
+
+\textbf{(iii) Résolution pour la rétroaction.} Les phénomènes de 
+rétroaction (supernova, AGN) opèrent à des échelles de $\sim 1$ pc, 
+bien en dessous de la résolution typique des simulations de grand 
+volume ($\epsilon_{\rm soft} \sim 1$ kpc). À basse résolution, 
+l'énergie thermique injectée est immédiatement rayonnée, rendant la rétroaction artificielle et peu fiable \cite{SpringelHernquist2003}.
+
+Ces trois défis sont intimement liés : améliorer la résolution 
+aggrave le problème de convergence et augmente le besoin de 
+re-calibration. C'est précisément pourquoi les astrophysiciens 
+continuent d'écrire des articles sur ces sujets :  aucune 
+simulation actuelle ne peut être à la fois 
+être représentative à l'échelle cosmologique, convergée, et 
+capable de résoudre les échelles de la rétroaction.
+
+\subsection{Avenues de recherche pour les prochaines années}
+
+Les principaux avancements attendus pour les 10 à 15 prochaines 
+années s'articulent autour de quatre axes \cite{Vogelsberger2020} :
+
+\textbf{(i) Meilleure compréhension de la formation des galaxies.} 
+Les simulations futures visent à répondre à des questions encore 
+ouvertes : quels sont les mécanismes précis de la formation des étoiles dans les galaxies? Quel est le rôle exact des champs 
+magnétiques et des rayons cosmiques dans la régulation de la rétroaction? 
+De nouveaux observatoires comme le \textit{James Webb Space Telescope} fourniront des contraintes observationnelles sans précédent à grand redshift ($z > 6$), permettant de tester directement les prédictions des simulations aux époques de formation des premières galaxies.
+
+\textbf{(ii) Meilleures méthodes numériques.} Le développement de 
+schémas hydrodynamiques hybrides (SPH + maillage adaptatif), de 
+méthodes magnétohydrodynamiques (MHD) et de traitements améliorés 
+du transfert radiatif permettrons de modéliser des phénomènes physiques jusqu'ici 
+négligés. En particulier, l'inclusion des rayons cosmiques et des 
+champs magnétiques via les équations MHD :
+%
+\begin{equation}
+    \frac{\partial \mathbf{B}}{\partial t} = 
+    \nabla \times (\mathbf{v} \times \mathbf{B})
+    \label{eq:MHD_ccl}
+\end{equation}
+%
+
+
+\textbf{(iii) Croissance de la puissance des supercalculateurs.} 
+L'avènement des ordinateurs quantiques et du calcul exascale ($\sim 10^{18}$ opérations par seconde) permettront d'atteindre des résolutions $N \sim 10^{12}$ particules, réduisant l'écart entre les échelles numériques et physiques. Cela rendra possible, pour la première fois, des simulations de grand volume cosmologique avec une résolution suffisante pour capturer directement les processus de rétroaction, sans recourir à nos modèles actuels qui sont déjà archaïques.
+
+\textbf{(iv) Émulateurs en apprentissage automatique (IA).} 
+L'incorporation de l'intelligence artificielle basée sur l'apprentissage automatique constitue une avancée très prometteuse. Des 
+réseaux de neurones entraînés sur des suites de simulations hydrodynamiques \cite{Villaescusa2021} permettent de reproduire les résultats de simulations complètes à partir des résultats des simulations N-body, tout en explorant efficacement l'espace des paramètres pour la calibration. Cette approche ouvre également la possibilité d'une inférence bayésienne des paramètres cosmologiques et astrophysiques directement à partir des observations.
+
+Pour conclure, la simulation hydrodynamique est essentielle pour comprendre la formation des galaxies et structures extra-galactiques depuis le Big Bang. Cette simulation est portée par la synergie entre l'augmentation de la puissance de calcul, le raffinement des méthodes numériques et l'essor de l'intelligence artificielle. Les prochaines années verront sans doute les premières simulations capables de reproduire simultanément la physique au niveau des étoiles à l'échelle de l'Univers; répondant ainsi aux questions les plus fondamentales de l'astrophysique moderne.
+
+\bibliography{biblio.bib}
+
+
+
+
+\end{document}
